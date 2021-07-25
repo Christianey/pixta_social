@@ -4,8 +4,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
-const cluster = require("cluster");
-const numberOfCPUs = require("os").cpus().length;
+const { authRoutes } = require("./routes/authRoutes");
 
 const app = express();
 
@@ -22,6 +21,9 @@ const debug = require("debug")(process.env.DEBUG);
 require("./config/database");
 
 app.get("/", (req, res) => res.json({ msg: "Yes, actually working" }));
+
+//ROUTES
+app.use("/api", authRoutes);
 
 const PORT = process.env.PORT || 5000;
 

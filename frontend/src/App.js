@@ -1,6 +1,7 @@
 import "./App.css";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import PageRender from "./utils/pageRender";
+import Home from "./pages/home";
 
 function App() {
   return (
@@ -9,6 +10,7 @@ function App() {
       <div className="App">
         <main>
           <Switch>
+            <Route exact path="/" component={Home} />
             <Route exact path="/:page" component={PageRender} />
             <Route exact path="/:page/:id" component={PageRender} />
             <Route component={PageRender} />
