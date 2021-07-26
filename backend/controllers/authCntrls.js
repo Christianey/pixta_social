@@ -13,6 +13,11 @@ const authCntrls = {
     try {
       const { fullName, username, email, password, gender } = req.body;
 
+      if (!fullName || !username || !email || !password)
+        return res
+          .status(400)
+          .json({ message: "Please input all required fields." });
+
       if (username.trim().includes(" ")) {
         return res
           .status(400)
@@ -22,7 +27,7 @@ const authCntrls = {
       const newUsername = await User.findOne({ username });
 
       if (newUsername)
-        return res.status(400).json({ message: "User already exists" });
+        return res.status(400).json({ message: "Username already in use" });
 
       const newEmail = await User.findOne({ email });
 
@@ -49,7 +54,7 @@ const authCntrls = {
       const accessToken = createAccessToken({ id: user._id });
       const refreshToken = createRefreshToken({ id: user._id });
 
-      res.cookie("refreshtoken", refreshToken, {
+      res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
         path: "/api/refresh_token",
         maxAge: 30 * 24 * 60 * 60 * 1000,
@@ -63,14 +68,99 @@ const authCntrls = {
         user: { ...user._doc, salt: null, hash: null },
       });
     } catch (error) {
-      debug(error);
-      res.status(500).json({ error });
+      next(error);
     }
   },
-  login: async function () {},
-  login: async function () {},
-  logout: async function () {},
-  generateAccessToken: async function () {},
+  login: async function (req, res, next) {
+    try {
+      const { email, username, password } = req.body;
+
+      if (!(email || username))
+        return res
+          .status(400)
+          .json({ message: "Please input username or email and try again" });
+
+      const user = await Promise.any([
+        User.findOne({ email })
+          .select("-salt -hash")
+          .populate("followers following", "-salt -hash"),
+        User.findOne({ username }).populate(
+          "followers following",
+          "-salt -hash"
+        ),
+      ]);
+
+      if (!user) {
+        return res
+          .status(400)
+          .json({ message: "Username or email doesn't exist" });
+      }
+
+      if (!validatePassword(password, user.salt, user.hash)) {
+        return res.status(400).json({ message: "Invalid password." });
+      }
+
+      const accessToken = createAccessToken({ id: user._id });
+      const refreshToken = createRefreshToken({ id: user._id });
+
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        path: "/api/refresh_token",
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+      });
+
+      res.json({
+        message: "Login successful",
+        accessToken,
+        user,
+      });
+    } catch (error) {
+      next(error);
+    }
+  },
+  logout: async function (req, res, next) {
+    try {
+      res.clearCookie("refreshToken", {
+        path: "/api/refresh_token",
+      });
+
+      res.json({ message: "Logged out" });
+    } catch (error) {
+      next(error);
+    }
+  },
+  generateAccessToken: async function (req, res, next) {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+      if (!refreshToken)
+        return res.status(400).json({ message: "Please login." });
+
+      jwt.verify(
+        refreshToken,
+        process.env.REFRESH_TOKEN_SCRET,
+        async (error, userId) => {
+          if (error) return res.status(400).json({ message: "Please login" });
+
+          const user = await User.findById(userId)
+            .select("-hash -salt")
+            .populate("followers following", "-hash -salt");
+
+          if (!user)
+            return res.status(400).json({ message: "User doesn't exist" });
+
+          const accessToken = createAccessToken({ id: user._id });
+
+          res.json({
+            accessToken,
+            user,
+          });
+        }
+      );
+      res.json({ refreshToken });
+    } catch (error) {
+      next(error);
+    }
+  },
 };
 
 module.exports = authCntrls;

@@ -5,6 +5,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const { authRoutes } = require("./routes/authRoutes");
+const errorCntrls = require("./controllers/errorCntrls");
 
 const app = express();
 
@@ -24,6 +25,9 @@ app.get("/", (req, res) => res.json({ msg: "Yes, actually working" }));
 
 //ROUTES
 app.use("/api", authRoutes);
+
+//ERROR CONTROLLER
+app.use(errorCntrls);
 
 const PORT = process.env.PORT || 5000;
 

@@ -10,8 +10,10 @@ const generatePasswordHash = (password) => {
 };
 
 const validatePassword = (password, salt, hash) => {
-  const hashVerify = crypto.pbkdf2Sync(password, salt, 1000, 64, "sha512");
-  return hash === hashVerify;
+  const hashVerify = crypto
+    .pbkdf2Sync(password, salt, 1000, 64, "sha512")
+    .toString("hex");
+  return hashVerify === hash;
 };
 
 module.exports = { generatePasswordHash, validatePassword };
