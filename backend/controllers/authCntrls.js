@@ -1,7 +1,11 @@
 require("dotenv").config();
 const debug = require("debug")(process.env.DEBUG);
-const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const {
+  generatePasswordHash,
+  validatePassword,
+} = require("../lib/passwordUtils");
+const { createAccessToken, createRefreshToken } = require("../lib/jwtUtils");
 const User = require("../models/user");
 
 const authCntrls = {
@@ -30,22 +34,34 @@ const authCntrls = {
           .status(400)
           .json({ message: "Password must be at least 6 characters" });
 
-      const salt = crypto.randomBytes(32).toString("hex");
-      const passwordHash = crypto
-        .pbkdf2Sync(password, salt, 1000, 64, "sha512")
-        .toString("hex");
+      const { salt, hash } = generatePasswordHash(password);
 
       const userData = {
         fullName,
         username,
         email,
-        password: passwordHash,
+        salt,
+        hash,
         gender,
       };
       const user = new User(userData);
+
+      const accessToken = createAccessToken({ id: user._id });
+      const refreshToken = createRefreshToken({ id: user._id });
+
+      res.cookie("refreshtoken", refreshToken, {
+        httpOnly: true,
+        path: "/api/refresh_token",
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+      });
+
       await user.save();
 
-      res.json(user);
+      res.json({
+        message: "Registration Successful!",
+        accessToken,
+        user: { ...user._doc, salt: null, hash: null },
+      });
     } catch (error) {
       debug(error);
       res.status(500).json({ error });
