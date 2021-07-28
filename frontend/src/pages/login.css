@@ -1,7 +1,0 @@
-.login-wrapper {
-  display: grid;
-  place-content: center;
-  width: inherit;
-  height: inherit;
-  @apply bg-blue-300 text-white;
-}

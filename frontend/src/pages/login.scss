@@ -1,0 +1,10 @@
+.login-page {
+  @apply container flex mx-auto max-w-screen-md items-center h-screen gap-4;
+  & .phone-image-wrapper {
+    @apply flex w-3/5;
+  }
+
+  & .login-form {
+    @apply flex w-2/5 flex-col;
+  }
+}
