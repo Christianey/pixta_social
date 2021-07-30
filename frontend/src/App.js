@@ -1,6 +1,7 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.scss";
+import LoadingAppIcon from "./components/loadingAppIcon";
 
 const PageRender = lazy(() => import("./utils/pageRender"));
 const Home = lazy(() => import("./pages/home"));
@@ -10,7 +11,7 @@ function App() {
     <Router>
       {/* <input type="checkbox" name="check" id="theme" /> */}
       <div className="App">
-        <Suspense fallback={<p>...This App is Loading...</p>}>
+        <Suspense fallback={<LoadingAppIcon />}>
           <Switch>
             <Route exact path="/" component={Home} />
             <Route exact path="/:page" component={PageRender} />

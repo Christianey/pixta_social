@@ -1,6 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const NotFound = () => {
+  useEffect(() => {
+    document.title = "Oops! Page Not Found - Pixta";
+  }, []);
+
   return (
     <div
       style={{

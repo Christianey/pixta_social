@@ -14,6 +14,8 @@ const generatePage = (pageName) => {
 const PageRender = () => {
   const { page, id } = useParams();
   let pageName = id ? `${page}/${id}` : page;
+  // console.log(useParams());
+  // console.log(pageName);
   return generatePage(pageName);
 };
 
