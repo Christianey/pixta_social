@@ -1,6 +1,4 @@
 import "./login.scss";
-import { Link, useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import LoginForm from "../components/loginForm";
 import SignUpForm from "../components/signUpForm";
 import { useState } from "react";
