@@ -1,7 +1,10 @@
-import axios from "axios";
 import { useEffect, useRef, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import Input from "../controls/input";
 import { Form, useForm } from "../hooks/useForm";
+import authActionTypes from "../redux/reducers/auth/auth.actionTypes";
+import authThunk from "../redux/reducers/auth/auth.thunk";
+import "./signUpForm.scss";
 
 const initialState = {
   fullName: "",
@@ -11,16 +14,18 @@ const initialState = {
 };
 
 const SignUpForm = () => {
+  const { error, isLoading } = useSelector((state) => state.auth);
   const { userData, handleChange } = useForm(initialState);
   const [errorMessage, setErrorMessage] = useState({});
   const { fullName, username, email, password } = userData;
-  const isValid = fullName && username && email && password ? true : false;
+  const isValid = fullName && username && email && password ? false : true;
   const errorMessages = {
     fullName: "*invalid full name",
     username: "*username must contain only alphabets, numbers.",
     email: "*invalid email format",
     password: `*password must be at least 6 characters long. Currently at ${password.length}.`,
   };
+  const dispatch = useDispatch();
   const fullNameRef = useRef();
   const usernameRef = useRef();
   const emailRef = useRef();
@@ -36,12 +41,8 @@ const SignUpForm = () => {
 
     if (validInput) {
       setErrorMessage({});
-      console.log(userData);
-      axios({
-        method: "POST",
-        url: "/api/user/sign-up",
-        data: userData,
-      });
+
+      dispatch(authThunk.signUp(userData));
     }
   };
 
@@ -62,7 +63,7 @@ const SignUpForm = () => {
     if (username.trim().match(validUsername)) return true;
 
     setErrorMessage({ username: errorMessages.username });
-    fullNameRef.current.focus();
+    usernameRef.current.focus();
     return false;
   }
 
@@ -89,7 +90,11 @@ const SignUpForm = () => {
     document.title = "Sign up - Pixta";
 
     fullNameRef.current.focus();
-  }, []);
+
+    return () => {
+      dispatch({ type: authActionTypes.AUTH_CLEAR_ERROR });
+    };
+  }, [dispatch]);
 
   return (
     <Form onSubmit={handleSubmit}>
@@ -97,6 +102,9 @@ const SignUpForm = () => {
         <p className="flex justify-center text-center text-red-500">
           {Object.values(errorMessage)[0]}
         </p>
+      )}
+      {!Object.keys(errorMessage)[0] && error && (
+        <p className="flex justify-center text-center text-red-500">{`*${error}`}</p>
       )}
       <div className="form-group">
         <Input
@@ -148,7 +156,15 @@ const SignUpForm = () => {
           onChange={handleChange}
         />
 
-        <Input type="submit" isValid={isValid} value="SIGN UP" />
+        <button
+          type="submit"
+          className={`${
+            isValid && "opacity-50 cursor-default"
+          } mt-6 h-10 font-bold flex items-center justify-center w-full text-white bg-blue-medium`}
+          disabled={isValid}
+        >
+          SIGN UP{""} {isLoading && <span className="loading ml-2"></span>}
+        </button>
       </div>
     </Form>
   );

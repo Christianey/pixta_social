@@ -73,27 +73,21 @@ const authCntrls = {
   },
   login: async function (req, res, next) {
     try {
-      const { email, username, password } = req.body;
+      const { emailOrUsername, password } = req.body;
 
-      if (!(email || username))
+      if (!emailOrUsername)
         return res
           .status(400)
-          .json({ message: "Please input username or email and try again" });
+          .json({ message: "Please input username or email and try again." });
 
-      const user = await Promise.any([
-        User.findOne({ email })
-          .select("-salt -hash")
-          .populate("followers following", "-salt -hash"),
-        User.findOne({ username }).populate(
-          "followers following",
-          "-salt -hash"
-        ),
-      ]);
+      const user =
+        (await User.findOne({ username: emailOrUsername })) ||
+        (await User.findOne({ email: emailOrUsername }));
 
       if (!user) {
         return res
           .status(400)
-          .json({ message: "Username or email doesn't exist" });
+          .json({ message: "Username or email doesn't exist." });
       }
 
       if (!validatePassword(password, user.salt, user.hash)) {
@@ -110,7 +104,7 @@ const authCntrls = {
       });
 
       res.json({
-        message: "Login successful",
+        message: "Login successful!",
         accessToken,
         user,
       });
@@ -124,7 +118,7 @@ const authCntrls = {
         path: "/api/refresh_token",
       });
 
-      res.json({ message: "Logged out" });
+      res.json({ message: "Logged out." });
     } catch (error) {
       next(error);
     }
@@ -132,21 +126,20 @@ const authCntrls = {
   generateAccessToken: async function (req, res, next) {
     try {
       const refreshToken = req.cookies.refreshToken;
-      if (!refreshToken)
-        return res.status(400).json({ message: "Please login." });
+      if (!refreshToken) return res.status(400).json({ msg: "Please login." });
 
       jwt.verify(
         refreshToken,
-        process.env.REFRESH_TOKEN_SCRET,
-        async (error, userId) => {
-          if (error) return res.status(400).json({ message: "Please login" });
+        process.env.REFRESH_TOKEN_SECRET,
+        async (error, { id }) => {
+          if (error) return res.status(400).json({ msg: "Please login." });
 
-          const user = await User.findById(userId)
+          const user = await User.findById(id)
             .select("-hash -salt")
             .populate("followers following", "-hash -salt");
 
           if (!user)
-            return res.status(400).json({ message: "User doesn't exist" });
+            return res.status(400).json({ msg: "User doesn't exist." });
 
           const accessToken = createAccessToken({ id: user._id });
 
@@ -156,7 +149,6 @@ const authCntrls = {
           });
         }
       );
-      res.json({ refreshToken });
     } catch (error) {
       next(error);
     }

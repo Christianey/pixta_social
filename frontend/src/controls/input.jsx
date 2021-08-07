@@ -18,9 +18,9 @@ const Input = forwardRef((props, ref) => {
       aria-label={placeholder}
       aria-placeholder={placeholder}
       placeholder={placeholder}
-      className={`block mb-2 w-full border border-gray-100 rounded-sm p-2 px-4  ${
-        type === "submit" && "mt-6 h-10 font-bold"
-      } ${isValid && "cursor-pointer"} ${
+      className={`block mb-2 w-full border border-gray-100 rounded-sm p-2 px-4 ${
+        isValid && "cursor-pointer"
+      } ${
         error === name && error !== undefined
           ? "border-red-600"
           : "focus:border-blue-medium"
@@ -33,7 +33,6 @@ const Input = forwardRef((props, ref) => {
         opacity: `${
           isValid === undefined ? "1" : isValid === true ? "1" : "0.5"
         }`,
-        marginBottom: `${type === "submit" && "0"}`,
       }}
       id={name}
       onChange={onChange}

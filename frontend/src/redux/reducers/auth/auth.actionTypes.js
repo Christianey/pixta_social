@@ -1,0 +1,8 @@
+const authActionTypes = {
+  AUTH_LOAD_START: "AUTH_LOAD_START",
+  AUTH_LOAD_SUCCESS: "AUTH_LOAD_SUCCESS",
+  AUTH_LOAD_ERROR: "AUTH_LOAD_ERROR",
+  AUTH_CLEAR_ERROR: "AUTH_CLEAR_ERROR",
+};
+
+export default authActionTypes;

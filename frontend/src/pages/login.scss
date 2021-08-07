@@ -2,15 +2,15 @@
   @apply container flex mx-auto max-w-screen-md items-center h-screen;
 
   & .phone-image-wrapper {
-    animation: #{fadeIn} 5s ease-in;
-    @apply flex w-0 md:w-3/5 transition-opacity;
+    @apply flex w-0 md:w-3/5;
 
+    > img {
+      animation: #{fadeIn} 2s ease-in;
+      @apply transition-opacity;
+    }
     @keyframes fadeIn {
       0% {
         opacity: 0;
-      }
-      100% {
-        opacity: 0.9;
       }
     }
   }
