@@ -8,6 +8,7 @@ import authThunk from "./redux/reducers/auth/auth.thunk";
 const PageRender = lazy(() => import("./utils/pageRender"));
 const Home = lazy(() => import("./pages/home"));
 const LoginSignUp = lazy(() => import("./pages/loginSignUp"));
+const Header = lazy(() => import("./components/Header"));
 
 function App() {
   const { accessToken } = useSelector((state) => state.auth);
@@ -18,9 +19,10 @@ function App() {
   }, [dispatch]);
   return (
     <Router>
-      {/* <input type="checkbox" name="check" id="theme" /> */}
+      <input type="checkbox" name="check" id="theme" className="hidden" />
       <div className="App">
         <Suspense fallback={<LoadingAppIcon />}>
+          {accessToken && <Header />}
           <Switch>
             <Route
               exact

@@ -8,12 +8,17 @@
 
 #theme:checked ~ .App {
   filter: invert(1);
+  background-color: "red";
 }
 
 .App {
   width: 100%;
   min-height: 100vh;
   background: #fafafa;
+
+  & > main {
+    max-width: 768px;
+  }
 }
 
 main {

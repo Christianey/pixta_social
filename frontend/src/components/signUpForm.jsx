@@ -163,7 +163,7 @@ const SignUpForm = () => {
           } mt-6 h-10 font-bold flex items-center justify-center w-full text-white bg-blue-medium`}
           disabled={isValid}
         >
-          SIGN UP{""} {isLoading && <span className="loading ml-2"></span>}
+          SIGN UP{""} {isLoading && <span className="loading ml-3"></span>}
         </button>
       </div>
     </Form>

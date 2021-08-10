@@ -23,6 +23,17 @@ const signIn = (data) => async (dispatch) => {
   }
 };
 
+const logout = () => async (dispatch) => {
+  dispatch(authActions.authLoadStart());
+  try {
+    await postData("logout");
+    localStorage.removeItem("firstLogin");
+    window.location.href = "/";
+  } catch (error) {
+    dispatch(authActions.authLoadError(error.response.data.message));
+  }
+};
+
 const refreshToken = () => async (dispatch) => {
   const firstLogin = localStorage.getItem("firstLogin");
   if (firstLogin) {
@@ -39,6 +50,7 @@ const refreshToken = () => async (dispatch) => {
 const authThunk = {
   signIn,
   signUp,
+  logout,
   refreshToken,
 };
 
