@@ -5,6 +5,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const cookieParser = require("cookie-parser");
 const { authRoutes } = require("./routes/authRoutes");
+const { userRoutes } = require("./routes/userRoutes");
 const errorCntrls = require("./controllers/errorCntrls");
 
 const app = express();
@@ -21,10 +22,9 @@ const debug = require("debug")(process.env.DEBUG);
 
 require("./config/database");
 
-app.get("/", (req, res) => res.json({ msg: "Yes, actually working" }));
-
 //ROUTES
 app.use("/api", authRoutes);
+app.use("/api", userRoutes);
 
 //ERROR CONTROLLER
 app.use(errorCntrls);
