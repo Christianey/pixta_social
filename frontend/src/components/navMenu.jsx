@@ -1,6 +1,7 @@
 import { NavLink, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import authThunk from "../redux/reducers/auth/auth.thunk";
+import Avatar from "./avatar";
 import {
   MdAccountCircle as AccountCircle,
   MdExplore as Explore,
@@ -52,7 +53,7 @@ const NavMenu = () => {
     fill: "transparent",
   };
   return (
-    <nav className="flex items-center">
+    <nav className="flex items-center fixed bottom-0 border-t justify-evenly w-full md:w-auto md:border-0 md:static lg:static">
       {navLinks.map((nav) => (
         <NavLink
           strict
@@ -77,15 +78,7 @@ const NavMenu = () => {
       ))}
       <div className="inline-block relative group">
         <button className="text-lg font-semibold py-2 px-4 rounded inline-flex items-center">
-          <AccountCircle
-            fontSize="large"
-            className="color-gray-400 rounded-full mr-1"
-            size="1.7rem"
-            style={{
-              boxShadow: "black 0px 0px 0px 2px",
-            }}
-          />{" "}
-          <ArrowDropdown />
+          <Avatar /> <ArrowDropdown />
         </button>
         <ul className="absolute hidden bg-white pt-1 group-hover:block w-max">
           <li className="rounded-t hover:bg-gray-100 py-2 px-4 block whitespace-no-wrap">

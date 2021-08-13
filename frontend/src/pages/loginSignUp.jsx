@@ -10,8 +10,6 @@ const LoginSignUp = () => {
   const [page, setPage] = useState(true);
   const { accessToken } = useSelector((state) => state.auth);
 
-  console.log(!!accessToken);
-  if (accessToken) return <Redirect to="/" />;
   return (
     <div className="login-page">
       <div className="phone-image-wrapper">
