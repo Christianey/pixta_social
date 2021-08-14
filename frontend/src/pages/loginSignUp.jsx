@@ -1,14 +1,10 @@
 import "./login.scss";
 import LoginForm from "../components/loginForm";
 import SignUpForm from "../components/signUpForm";
-import { Redirect } from "react-router-dom";
 import { useState } from "react";
-
-import { useSelector } from "react-redux";
 
 const LoginSignUp = () => {
   const [page, setPage] = useState(true);
-  const { accessToken } = useSelector((state) => state.auth);
 
   return (
     <div className="login-page">

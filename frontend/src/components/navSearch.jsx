@@ -1,7 +1,7 @@
 import { MdSearch as Search, MdClose } from "react-icons/md";
-import { useCallback, useRef, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import authThunk from "../redux/reducers/auth/auth.thunk";
+import { useRef, useState, useMemo, useCallback } from "react";
+import { useSelector } from "react-redux";
+import { debounce } from "lodash";
 import { getData } from "../utils/fetchDataAPI";
 import UserCard from "./userCard";
 
@@ -12,23 +12,47 @@ const NavSearch = () => {
   const { accessToken } = useSelector((state) => state.auth);
   const [loading, setLoading] = useState(false);
   const [notFound, setNotFound] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubmit = async (e) => {
+  const someFunction = useCallback(
+    async (inputValue) => {
+      if (!inputValue) {
+        handleClose();
+        return;
+      }
+      setLoading(true);
+      setNotFound(false);
+      setUsers([]);
+
+      try {
+        const response = await getData(
+          `/search?username=${inputValue}`,
+          accessToken
+        );
+        if (response.data.users.length) return setUsers(response.data.users);
+        setNotFound(true);
+      } catch (error) {
+        console.log(error);
+        setError(error.response.data.message);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [accessToken]
+  );
+
+  const handler = useMemo(
+    () =>
+      debounce((inputValue) => {
+        someFunction(inputValue);
+      }, 1000),
+    [someFunction]
+  );
+
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!search) return;
-    setLoading(true);
-    setNotFound(false);
-    setUsers([]);
-
-    try {
-      const response = await getData(`/search?username=${search}`, accessToken);
-      if (response.data.users.length) return setUsers(response.data.users);
-      setNotFound(true);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
+    setSearch(e.target.value);
+    handler(e.target.value);
   };
 
   const handleClose = () => {
@@ -38,7 +62,7 @@ const NavSearch = () => {
   };
 
   const handleKeyPress = (e) => {
-    if (e.keyCode == 27) handleClose();
+    if (e.keyCode === 27) handleClose();
   };
 
   return (
@@ -56,29 +80,37 @@ const NavSearch = () => {
           value={search}
           id="search"
           title="Enter to search"
-          onChange={(e) => {
-            setSearch(e.target.value);
-            console.log(search);
-            setTimeout(() => handleSubmit(e), 1000);
-          }}
+          onChange={handleSubmit}
           onKeyDown={handleKeyPress}
         />
+
         <div
           className="absolute top-9 bg-white w-full p-5 border-b-0 rounded-b-lg shadow-md"
-          style={{ display: users.length > 0 || notFound ? "block" : "none" }}
+          style={{
+            display: users.length > 0 || notFound || loading ? "block" : "none",
+          }}
         >
+          {loading && (
+            <div className="w-8 h-8 mx-auto">
+              <img src="/loadingGif.jpg" alt="loading" />
+            </div>
+          )}
           {users.length > 0 &&
             users?.map((user) => (
-              <UserCard key={user._id} user={user} handleClose={handleClose} />
+              <UserCard
+                key={user._id}
+                user={user}
+                handleClose={handleClose}
+                loading={loading}
+              />
             ))}{" "}
           {notFound && (
             <span className="text-gray-600 italic">No results found</span>
           )}
+          {error && <span className="text-gray-600 italic">{error}</span>}
         </div>
       </div>
-      <button type="submit" style={{ display: "none" }}>
-        Search
-      </button>
+
       {!search && (
         <div
           className="text-gray-500 flex items-center absolute top-2/4 left-2/4 cursor-text"
@@ -89,6 +121,7 @@ const NavSearch = () => {
           <span>Search</span>
         </div>
       )}
+
       {search && (
         <div>
           {!loading && (
@@ -98,9 +131,11 @@ const NavSearch = () => {
               onClick={handleClose}
             />
           )}
+
           {loading && (
             <img
               src="/loadingGif.jpg"
+              alt="loading"
               width="15px"
               height="15px"
               className="cursor-pointer ml-1 child absolute"

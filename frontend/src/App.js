@@ -23,15 +23,22 @@ function App() {
       <div className="App">
         <Suspense fallback={<LoadingAppIcon />}>
           {accessToken && <Header />}
-          <Switch>
-            <Route
-              exact
-              path="/"
-              component={accessToken ? Home : LoginSignUp}
-            />
-            <Route exact path="/:page" component={PageRender} />
-            <Route exact path="/:page/:id" component={PageRender} />
-          </Switch>
+          <main
+            className={`${
+              accessToken &&
+              "bg-white border border-gray-100 p-8 mx-auto my-4 max-w-3xl"
+            }`}
+          >
+            <Switch>
+              <Route
+                exact
+                path="/"
+                component={accessToken ? Home : LoginSignUp}
+              />
+              <Route exact path="/:page" component={PageRender} />
+              <Route exact path="/:page/:id" component={PageRender} />
+            </Switch>
+          </main>
         </Suspense>
       </div>
     </Router>

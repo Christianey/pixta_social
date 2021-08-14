@@ -1,9 +1,9 @@
+import { useState } from "react";
 import { NavLink, Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import authThunk from "../redux/reducers/auth/auth.thunk";
 import Avatar from "./avatar";
 import {
-  MdAccountCircle as AccountCircle,
   MdExplore as Explore,
   MdFavorite as Favorite,
   MdNearMe as NearMe,
@@ -36,13 +36,14 @@ const navLinks = [
 ];
 
 const NavMenu = () => {
+  const [theme, setTheme] = useState(true);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
 
-  function isActive(match) {
+  const isActive = (match) => {
     if (!match) return false;
     return true;
-  }
+  };
   const logout = () => {
     dispatch(authThunk.logout());
   };
@@ -85,7 +86,11 @@ const NavMenu = () => {
             <Link to={`/profile/${[user._id]}`}>Profile</Link>
           </li>
           <li className="rounded-t hover:bg-gray-100 py-2 px-4 block whitespace-no-wrap">
-            <label htmlFor="theme">Dark Mode</label>
+            <label
+              htmlFor="theme"
+              className="cursor-pointer"
+              onClick={() => setTheme(!theme)}
+            >{`${!theme ? "Light" : "Dark"} Mode`}</label>
           </li>
           <li
             className="rounded-t border-t cursor-pointer border-gray-200 hover:bg-gray-100 py-2 px-4 block whitespace-no-wrap"

@@ -4,7 +4,7 @@ const Avatar = ({ url, ...otherProps }) => {
   return (
     <div {...otherProps}>
       {url ? (
-        <img src={url} alt="display picture" />
+        <img src={url} alt="profile" />
       ) : (
         <MdAccountCircle
           fontSize="large"
