@@ -3,12 +3,12 @@ import axios from "axios";
 const headers = {
   "Content-Type": "application/json",
   Accept: "application/json",
-  "Access-Control-Allow-Origin": "http://localhost:5000/",
+  "Access-Control-Allow-Origin": "https://pixta.herokuapp.com",
 };
 
 export async function getData(url, token) {
   const response = await axios({
-    url: `/api/${url}`,
+    url: `https://pixta.herokuapp.com/api/${url}`,
     method: "GET",
     headers: { ...headers, Authorization: token },
   });
@@ -16,7 +16,7 @@ export async function getData(url, token) {
 }
 export async function postData(url, data, token) {
   const response = await axios({
-    url: `/api/${url}`,
+    url: `https://pixta.herokuapp.com/api/${url}`,
     method: "POST",
     headers: { ...headers, Authorization: token },
     data,
@@ -25,7 +25,7 @@ export async function postData(url, data, token) {
 }
 export async function putData(url, data, token) {
   const response = await axios({
-    url: `/api/${url}`,
+    url: `https://pixta.herokuapp.com/api/${url}`,
     method: "PUT",
     headers: { ...headers, Authorization: token },
     data,
@@ -34,7 +34,7 @@ export async function putData(url, data, token) {
 }
 export async function patchData(url, data, token) {
   const response = await axios({
-    url: `/api/${url}`,
+    url: `https://pixta.herokuapp.com/api/${url}`,
     method: "PATCH",
     headers: { ...headers, Authorization: token },
     data,
@@ -43,7 +43,7 @@ export async function patchData(url, data, token) {
 }
 export async function deleteData(url, token) {
   const response = await axios({
-    url: `/api/${url}`,
+    url: `https://pixta.herokuapp.com/api/${url}`,
     method: "DELETE",
     headers: { ...headers, Authorization: token },
   });
